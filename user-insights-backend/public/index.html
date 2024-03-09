@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Insights</title>
+  <style>
+    /* Add your CSS styles here */
+  </style>
+</head>
+<body>
+  <h1>User Insights</h1>
+
+  <form id="filterForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+    <label for="active">Active:</label>
+    <select id="active" name="active">
+      <option value="">All</option>
+      <option value="true">Active</option>
+      <option value="false">Inactive</option>
+    </select>
+    <button type="submit">Filter</button>
+  </form>
+
+  <div id="userData"></div>
+  <script>
+    async function fetchUsers() {
+      try {
+        const name = document.getElementById('name').value;
+        const active = document.getElementById('active').value;
+  
+        let url = '/users';
+        if (name || active) {
+          url += `?name=${name}&active=${active}`;
+        }
+  
+        const response = await fetch(url);
+        const data = await response.json();
+  
+        displayUsers(data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    }
+  
+    function displayUsers(users) {
+      const userDataElement = document.getElementById('userData');
+      userDataElement.innerHTML = '';
+  
+      if (users.length === 0) {
+        userDataElement.textContent = 'No users found.';
+        return;
+      }
+  
+      const userList = document.createElement('ul');
+      users.forEach(user => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${user.name} (Age: ${user.age}, Active: ${user.active ? 'Yes' : 'No'}, Last Login: ${user.last_login})`;
+        userList.appendChild(listItem);
+      });
+  
+      userDataElement.appendChild(userList);
+    }
+  
+    document.getElementById('filterForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      fetchUsers();
+    });
+  
+    window.addEventListener('load', fetchUsers);
+  </script>
+  
+</body>
+</html>
